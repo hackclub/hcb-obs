@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script id="CONFIG" type="application/json">{
+        "organization": "transparency-api",
+        "                ^ replace this with your organization": 0
+    }</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HCB for OBS Demo</title>
+    <style>
+        @font-face {
+            font-family: 'Phantom Sans';
+            src: url('https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Regular.woff')
+                format('woff'),
+              url('https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Regular.woff2')
+                format('woff2');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'Phantom Sans';
+            src: url('https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Italic.woff')
+                format('woff'),
+              url('https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Italic.woff2')
+                format('woff2');
+            font-weight: normal;
+            font-style: italic;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'Phantom Sans';
+            src: url('https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Bold.woff')
+                format('woff'),
+              url('https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Bold.woff2')
+                format('woff2');
+            font-weight: bold;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        :root {
+            --darker: #121217;
+            --dark: #17171d;
+            --darkless: #252429;
+            --black: #1f2d3d;
+            --steel: #273444;
+            --slate: #3c4858;
+            --muted: #8492a6;
+            --smoke: #e0e6ed;
+            --snow: #f9fafc;
+            --white: #ffffff;
+            --red: #ec3750;
+            --orange: #ff8c37;
+            --yellow: #f1c40f;
+            --green: #33d6a6;
+            --cyan: #5bc0de;
+            --blue: #338eda;
+            --purple: #a633d6;
+            --text: var(--black);
+            --background: var(--white);
+            --elevated: var(--white);
+            --sheet: var(--snow);
+            --sunken: var(--smoke);
+            --border: var(--smoke);
+            --primary: #ec3750;
+            --secondary: #8492a6;
+            --accent: #5bc0de;
+            --twitter: #1da1f2;
+            --facebook: #3b5998;
+            --instagram: #e1306c;
+        }
+
+        html, body, main {
+            width: 100vw;
+            height: 100vh;
+            font-family: 'Phantom Sans', sans-serif;
+        }
+
+        main {
+            display: none;
+            justify-content: start;
+            align-items: center;
+            flex-direction: column;
+            gap: 3vh;
+        }
+
+        h1 {
+            font-size: 5vw;
+            font-weight: bold;
+            margin: 0px;
+            -webkit-text-stroke: 1px black;
+             color: white;
+             text-shadow:
+                 3px 3px 0 #000,
+               -1px -1px 0 #000,  
+                1px -1px 0 #000,
+                -1px 1px 0 #000,
+                 1px 1px 0 #000;
+            color: var(--snow);
+        }
+
+        .red {
+            color: var(--red);
+        }
+
+        .orange {
+            color: var(--orange);
+        }
+
+        .yellow {
+            color: var(--yellow);
+        }
+
+        .green {
+            color: var(--green);
+        }
+
+        .blue {
+            color: var(--blue);
+        }
+
+        .purple {
+            color: var(--purple);
+        }
+
+        #app {
+            display: flex;
+        }
+
+        .fly-up {
+            position: relative;
+            animation: fly-up 1s;
+            animation-fill-mode: forwards;
+            bottom: 0px;
+        }
+  
+        @keyframes fly-up {
+            0% {
+                left: 0px;
+                bottom: -400px;
+                opacity: 0;
+            }
+            100% {
+                left: 0px;
+                bottom: 0px;
+                opacity: 1;
+            }
+        }
+
+        .bounce {
+            animation: bounce 1s infinite;
+            animation-fill-mode: forwards;
+            animation-timing-function: ease-in-out;
+        }
+
+        @keyframes bounce {
+            0% {
+                scale: 1;
+            }
+            50% {
+                scale: 1.05;
+            }
+            100% {
+                scale: 1;
+            }
+        }
+
+        .float {
+            animation: float 2s infinite;
+            animation-fill-mode: forwards;
+            animation-timing-function: ease-in-out;
+            position: relative;
+        }
+
+        @keyframes float {
+            0% {
+                top: 0px;
+                left: 0px;
+            }
+            50% {
+                top: -10px;
+                left: 0px;
+            }
+            100% {
+                top: 0px;
+                left: 0px;
+            }
+        }
+
+        .fly-out {
+            position: relative;
+            animation: fly-out 1s;
+            animation-fill-mode: forwards;
+            bottom: 0px;
+        }
+  
+        @keyframes fly-out {
+            0% {
+                left: 0px;
+                bottom: 0px;
+                opacity: 1;
+            }
+            100% {
+                left: 0px;
+                bottom: -400px;
+                opacity: 0;
+            }
+        }
+  
+    </style>
+</head>
+<body>
+    <main id="app">
+        
+    </main>
+    <script>
+        // Fetch configuration options
+        const { organization } = JSON.parse(document.getElementById("CONFIG").textContent);
+        const app = document.getElementById("app");
+
+        // Handle fetching & queueing of donations
+        const queue = [];
+        const savedDonations = [];
+        fetch(`https://hcb.hackclub.com/api/v3/organizations/${organization}/donations`).then(res => res.json()).then(initialDonations => {
+            initialDonations.forEach(d => {
+                savedDonations.push(d.id);
+            });
+
+            displayDonation(initialDonations[0]); // For testing, the first donation is displayed to try it without actually sending money
+
+            console.log("Loaded initial donations", savedDonations);
+
+            setInterval(() => {
+                fetch(`https://hcb.hackclub.com/api/v3/organizations/${organization}/donations`).then(res => res.json()).then(donations => {
+                    const recent = donations.filter(d => !savedDonations.includes(d.id));
+
+                    recent.forEach(d => {
+                        queue.push(d);
+                        savedDonations.push(d.id);
+                    });
+
+                    if (recent.length) console.log("Discovered recent donations", recent);
+                    else console.log("No new donations");
+                });
+            }, 3_000); // 3,000 ms : 3 seconds
+        });
+
+        // Run through the queue and display new donations
+        setInterval(() => {
+            const donation = queue.shift();
+            if (!donation) return;
+
+            displayDonation(donation); // Call the function displayDonation
+
+            console.log("Displaying new donation:", donation);
+        }, 6_000); // 6,000 ms : 6 seconds
+
+        const formatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+        });          
+
+        // Define the displayDonation function
+        function displayDonation (donation) {
+            // Here, you can change up the code to display it however you'd like
+            app.innerHTML = `
+                <h1 class="fly-up float" id="${donation.id}"><span class="blue" id="${donation.id}_name"></span> just donated <span class="green">${formatter.format(donation.amount_cents / 100)}</span></h1>
+            `;
+
+            document.getElementById(donation.id + "_name").textContent = donation.donor.name;
+
+            setTimeout(() => {
+                document.getElementById(donation.id).classList.remove("fly-up");
+                document.getElementById(donation.id).classList.add("fly-out");
+            }, 3_000); // 3,000 ms : 3 seconds
+        }
+    </script>
+</body>
+</html>
