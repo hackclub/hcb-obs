@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <script id="CONFIG" type="application/json">{
-        "organization": "transparency-api",
+        "organization": "hq",
         "                ^ replace this with your organization": 0
     }</script>
     <meta charset="UTF-8">
@@ -217,7 +217,8 @@
     </main>
     <script>
         // Fetch configuration options
-        const { organization } = JSON.parse(document.getElementById("CONFIG").textContent);
+        const config = JSON.parse(document.getElementById("CONFIG").textContent);
+        const organization = new URLSearchParams(location.search).get("organization") || config.organization;
         const app = document.getElementById("app");
 
         // Handle fetching & queueing of donations
